@@ -1,0 +1,14 @@
+%m m1 {
+    !nop;
+}
+
+%mi mi1 !nop;
+
+
+%m m2 {
+    !nop;
+}
+
+%mi mi2 !nop;
+
+%i i1 { !nop; }

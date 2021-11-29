@@ -1,0 +1,4 @@
+%mi mi1 a;
+%mi mi2(a) a | b | c;
+
+%i i1 { !nop; }
