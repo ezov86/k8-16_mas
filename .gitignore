@@ -1,0 +1,8 @@
+venv/
+/parsing/parsetab.py
+/parsing/parser.out
+__pycache__/
+.idea/
+.coverage
+.coveragerc
+.pytest_cache/
