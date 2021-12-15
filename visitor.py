@@ -10,4 +10,4 @@ class Visitor:
         return getattr(self, name)(node, *args, **kwargs)
 
     def visit_default(self, node, *args, **kwargs):
-        raise NotImplementedError(f'No visit method found for \'{node.__class__.__name__}\'.')
+        raise ValueError(f'No visit method found for value of type \'{node.__class__.__name__}\'.')
