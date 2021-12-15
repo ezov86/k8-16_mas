@@ -18,6 +18,12 @@ class ArgsParsingStage(BaseStage):
         arg_parser.add_argument('-i', '--use-intel-hex', help='Use Intel HEX as output format.',
                                 action='store_true')
 
-        ArgsManager().init(arg_parser.parse_args())
+        args = arg_parser.parse_args()
 
-        super().handle(ArgsManager().source_file_path)
+        ArgsManager.source_file_path = args.source_file_path
+        ArgsManager.stop_after_parsing = args.stop_after_parsing
+        ArgsManager.ignore_warnings = args.ignore_warnings
+        ArgsManager.use_csv = args.use_csv
+        ArgsManager.use_intel_hex = args.use_intel_hex
+
+        return super().handle(ArgsManager.source_file_path)

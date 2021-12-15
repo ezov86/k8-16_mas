@@ -7,5 +7,5 @@ class AssemblyWarning(Issue):
         return f'WARNING {super().__str__()}'
 
     def handle(self):
-        IssuesManager().add_warning(self)
+        IssuesManager.add_warning(self)
         return self

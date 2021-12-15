@@ -32,14 +32,14 @@ def load_invalid(rule: str, sample_num: int) -> str:
 
 def eof(rule: str, sample_num: int):
     parse(load_invalid(rule, sample_num))
-    produced_error = IssuesManager().errors[-1]
+    produced_error = IssuesManager.errors[-1]
 
     assert isinstance(produced_error, UnexpectedEofError)
 
 
 def invalid_syntax(rule: str, sample_num: int, line: int, token: str):
     parse(load_invalid(rule, sample_num))
-    produced_error = IssuesManager().errors[-1]
+    produced_error = IssuesManager.errors[-1]
 
     print(produced_error)
 
@@ -49,7 +49,7 @@ def invalid_syntax(rule: str, sample_num: int, line: int, token: str):
 
 def invalid_lexem(rule: str, sample_num: int, line: int, token: str, error_index: int):
     parse(load_invalid(rule, sample_num))
-    produced_error = IssuesManager().errors[error_index]
+    produced_error = IssuesManager.errors[error_index]
 
     assert isinstance(produced_error, LexerError)
     assert str(produced_error) == f'ERROR at line {line}: invalid token "{token}".'

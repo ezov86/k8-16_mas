@@ -10,10 +10,10 @@ class BaseStage:
         return self.next
 
     def handle_issues(self):
-        print(IssuesManager().warnings_to_str())
+        print(IssuesManager.warnings_to_str())
 
-        if IssuesManager().has_errors():
-            print(IssuesManager().errors_to_str())
+        if IssuesManager.has_errors():
+            print(IssuesManager.errors_to_str())
             exit(-1)
 
     def handle(self, value):

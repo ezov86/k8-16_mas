@@ -1,29 +1,35 @@
 from pattern_singleton import Singleton
 
 
-class IssuesManager(metaclass=Singleton):
-    def __init__(self):
-        self.errors = []
-        self.warnings = []
+class IssuesManager:
+    errors = []
+    warnings = []
 
-    def reset(self):
-        self.errors = []
-        self.warnings = []
+    @classmethod
+    def reset(cls):
+        cls.errors = []
+        cls.warnings = []
 
-    def has_errors(self) -> bool:
-        return self.errors != []
+    @classmethod
+    def has_errors(cls) -> bool:
+        return cls.errors != []
 
-    def has_warnings(self) -> bool:
-        return not self.warnings != []
+    @classmethod
+    def has_warnings(cls) -> bool:
+        return not cls.warnings != []
 
-    def add_error(self, error):
-        self.errors.append(error)
+    @classmethod
+    def add_error(cls, error):
+        cls.errors.append(error)
 
-    def add_warning(self, warning):
-        self.warnings.append(warning)
+    @classmethod
+    def add_warning(cls, warning):
+        cls.warnings.append(warning)
 
-    def errors_to_str(self) -> str:
-        return '\n'.join([str(error) for error in self.errors])
+    @classmethod
+    def errors_to_str(cls) -> str:
+        return '\n'.join([str(error) for error in cls.errors])
 
-    def warnings_to_str(self) -> str:
-        return '\n'.join([str(error) for error in self.warnings])  # pragma: no cover
+    @classmethod
+    def warnings_to_str(cls) -> str:
+        return '\n'.join([str(error) for error in cls.warnings])

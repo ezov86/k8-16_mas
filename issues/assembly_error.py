@@ -7,5 +7,5 @@ class AssemblyError(Issue):
         return f'ERROR {super().__str__()}'
 
     def handle(self):
-        IssuesManager().add_error(self)
+        IssuesManager.add_error(self)
         return self
