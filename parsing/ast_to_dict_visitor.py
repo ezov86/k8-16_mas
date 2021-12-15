@@ -45,9 +45,6 @@ class AstToDictVisitor(Visitor):
     def visit_macroinstruction_definition(self, n: MacroinstructionDefinition) -> dict:
         return self.visit_definition(n)
 
-    def visit_default(self, node, *args, **kwargs):
-        return node
-
     def visit_root(self, node: Root) -> dict:
         return {
             'macros_defs': [self.visit(macros_def) for macros_def in node.macros_defs],
