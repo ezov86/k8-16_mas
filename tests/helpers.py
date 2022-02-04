@@ -10,13 +10,16 @@ else:
     root_dir = 'tests/'  # pragma: no cover
 
 
-def get_path(test_name: str, path_in_samples_dir: str, is_valid: bool) -> str:
-    s = f'{root_dir}{test_name}_samples/'
+def get_path(test_name: str, path_in_test_dir: str) -> str:
+    return f'{root_dir}{test_name}_samples/{path_in_test_dir}'
+
+
+def get_test_path(test_name: str, path_in_samples_dir: str, is_valid: bool) -> str:
     if is_valid:
-        s += 'valid/'
+        path_in_test_dir = 'valid/'
     else:
-        s += 'invalid/'
+        path_in_test_dir = 'invalid/'
 
-    s += f'{path_in_samples_dir}.mas'
+    path_in_test_dir += f'{path_in_samples_dir}.mas'
 
-    return s
+    return get_path(test_name, path_in_test_dir)
