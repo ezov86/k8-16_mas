@@ -26,4 +26,4 @@ class ArgsParsingStage(BaseStage):
         ArgsManager.use_csv = args.use_csv
         ArgsManager.use_intel_hex = args.use_intel_hex
 
-        return super().handle(ArgsManager.source_file_path)
+        return super().handle(ArgsManager)

@@ -7,8 +7,8 @@ from parsing.ast_to_dict_visitor import AstToDictVisitor
 
 
 class ParsingStage(BaseStage):
-    def handle(self, source_file_path: str):
-        with open(source_file_path) as file:
+    def handle(self, args):
+        with open(args.source_file_path) as file:
             text = file.read()
 
         ast = parser.parse(text, tracking=True)

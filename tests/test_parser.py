@@ -1,3 +1,4 @@
+from args.manager import ArgsManager
 from issues.manager import IssuesManager
 from parsing.ast import Root, Microinstruction, MacroinstructionDefinition, BitMask, MacrosDefinition
 from parsing.ast_to_dict_visitor import AstToDictVisitor
@@ -12,7 +13,9 @@ def get_parser_sample_path(path_in_samples_dir: str, is_valid: bool) -> str:
 
 
 def parse(path: str):
-    ast = ParsingStage().handle(path)
+    ArgsManager.source_file_path = path
+
+    ast = ParsingStage().handle(ArgsManager)
     lexer.lineno = 1
 
     return ast
@@ -24,6 +27,8 @@ def eof(rule: str, sample_num: int):
 
     assert isinstance(produced_error, UnexpectedEofError)
 
+    IssuesManager.reset()
+
 
 def invalid_syntax(rule: str, sample_num: int, line: int, token: str):
     parse(get_parser_sample_path(f'{rule}/{sample_num}', is_valid=False))
@@ -34,6 +39,8 @@ def invalid_syntax(rule: str, sample_num: int, line: int, token: str):
     assert isinstance(produced_error, InvalidSyntaxError)
     assert str(produced_error) == f'ERROR at line {line}: invalid syntax near "{token}".'
 
+    IssuesManager.reset()
+
 
 def invalid_lexem(rule: str, sample_num: int, line: int, token: str, error_index: int):
     parse(get_parser_sample_path(f'{rule}/{sample_num}', is_valid=False))
@@ -41,6 +48,8 @@ def invalid_lexem(rule: str, sample_num: int, line: int, token: str, error_index
 
     assert isinstance(produced_error, LexerError)
     assert str(produced_error) == f'ERROR at line {line}: invalid token "{token}".'
+
+    IssuesManager.reset()
 
 
 # Invalid samples.
