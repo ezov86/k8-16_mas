@@ -9,7 +9,7 @@ import helpers
 
 
 def get_parser_sample_path(path_in_samples_dir: str, is_valid: bool) -> str:
-    return helpers.get_path('parser', path_in_samples_dir, is_valid)
+    return helpers.get_test_path('parser', path_in_samples_dir, is_valid)
 
 
 def parse(path: str):
