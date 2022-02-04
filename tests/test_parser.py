@@ -1,44 +1,32 @@
-import os
-
 from issues.manager import IssuesManager
 from parsing.ast import Root, Microinstruction, MacroinstructionDefinition, BitMask, MacrosDefinition
 from parsing.ast_to_dict_visitor import AstToDictVisitor
 from parsing.errors import UnexpectedEofError, InvalidSyntaxError, LexerError
 from parsing.lexer import lexer
-from parsing.parser import parser
-
-if os.path.isdir('parser_samples'):
-    root_dir = '.'  # pragma: no cover
-else:
-    root_dir = 'tests'  # pragma: no cover
+from parsing.stage import ParsingStage
+import helpers
 
 
-def parse(text: str):
-    ast = parser.parse(text, tracking=True)
+def get_parser_sample_path(path_in_samples_dir: str, is_valid: bool) -> str:
+    return helpers.get_path('parser', path_in_samples_dir, is_valid)
+
+
+def parse(path: str):
+    ast = ParsingStage().handle(path)
     lexer.lineno = 1
 
     return ast
 
 
-def load_sample(path_in_samples_dir: str) -> str:
-    with open(f'{root_dir}/parser_samples/{path_in_samples_dir}.mas', 'r') as file:
-        return file.read()
-
-
-# Invalid samples helpers.
-def load_invalid(rule: str, sample_num: int) -> str:
-    return load_sample(f'invalid/{rule}/{sample_num}')
-
-
 def eof(rule: str, sample_num: int):
-    parse(load_invalid(rule, sample_num))
+    parse(get_parser_sample_path(f'{rule}/{sample_num}', is_valid=False))
     produced_error = IssuesManager.errors[-1]
 
     assert isinstance(produced_error, UnexpectedEofError)
 
 
 def invalid_syntax(rule: str, sample_num: int, line: int, token: str):
-    parse(load_invalid(rule, sample_num))
+    parse(get_parser_sample_path(f'{rule}/{sample_num}', is_valid=False))
     produced_error = IssuesManager.errors[-1]
 
     print(produced_error)
@@ -48,7 +36,7 @@ def invalid_syntax(rule: str, sample_num: int, line: int, token: str):
 
 
 def invalid_lexem(rule: str, sample_num: int, line: int, token: str, error_index: int):
-    parse(load_invalid(rule, sample_num))
+    parse(get_parser_sample_path(f'{rule}/{sample_num}', is_valid=False))
     produced_error = IssuesManager.errors[error_index]
 
     assert isinstance(produced_error, LexerError)
@@ -137,12 +125,8 @@ def test_invalid_root():
 
 
 # Valid samples helpers.
-def load_valid(sample_name: str) -> str:
-    return load_sample(f'valid/{sample_name}')
-
-
 def assert_ast(sample_name: str, expected_ast: Root):
-    produced_ast = parse(load_valid(sample_name))
+    produced_ast = parse(get_parser_sample_path(sample_name, is_valid=True))
     visitor = AstToDictVisitor(tracking=False)
 
     assert visitor.visit(produced_ast) == visitor.visit(expected_ast)

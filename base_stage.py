@@ -1,3 +1,4 @@
+from args.manager import ArgsManager
 from issues.manager import IssuesManager
 
 
@@ -14,7 +15,9 @@ class BaseStage:
 
         if IssuesManager.has_errors():
             print(IssuesManager.errors_to_str())
-            exit(-1)
+
+            if not ArgsManager.ignore_errors:
+                exit(-1)
 
     def handle(self, value):
         if self.next is None:
