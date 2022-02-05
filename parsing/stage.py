@@ -16,7 +16,7 @@ class ParsingStage(BaseStage):
         self.handle_issues()
 
         if ArgsManager.stop_after_parsing:
-            ast_dict = AstToDictVisitor().visit(ast)
+            ast_dict = AstToDictVisitor(tracking=True).visit(ast)
             print(json.dumps(ast_dict))
             exit(0)
 
