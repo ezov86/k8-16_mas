@@ -3,7 +3,6 @@ from issues.manager import IssuesManager
 from parsing.ast import Root, Microinstruction, MacroinstructionDefinition, BitMask, MacrosDefinition
 from parsing.ast_to_dict_visitor import AstToDictVisitor
 from parsing.errors import UnexpectedEofError, InvalidSyntaxError, LexerError
-from parsing.lexer import lexer
 from parsing.stage import ParsingStage
 import helpers
 
@@ -16,7 +15,7 @@ def parse(path: str):
     ArgsManager.source_file_path = path
 
     ast = ParsingStage().handle(ArgsManager)
-    lexer.lineno = 1
+    helpers.reset_lexer()
 
     return ast
 

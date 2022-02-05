@@ -1,6 +1,7 @@
 import os
 
 from args.manager import ArgsManager
+from parsing.lexer import lexer
 
 ArgsManager.ignore_errors = True  # Чтобы продолжать работу теста при ошибке ассемблера.
 
@@ -23,3 +24,7 @@ def get_test_path(test_name: str, path_in_samples_dir: str, is_valid: bool) -> s
     path_in_test_dir += f'{path_in_samples_dir}.mas'
 
     return get_path(test_name, path_in_test_dir)
+
+
+def reset_lexer():
+    lexer.lineno = 1
