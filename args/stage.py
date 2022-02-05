@@ -7,15 +7,15 @@ from base_stage import BaseStage
 class ArgsParsingStage(BaseStage):
     def handle(self, _=None):
         arg_parser = argparse.ArgumentParser()
-        arg_parser.add_argument('source_file_path', help='Source code file path.')
+        arg_parser.add_argument('source_file_path', help='Путь к файлу с исходным кодом.')
         arg_parser.add_argument('-p', '--stop-after-parsing',
-                                help='Stop after parsing and dump AST in JSON format.',
+                                help='Остановиться после парсинга и вывести AST в формате JSON.',
                                 action='store_true')
-        arg_parser.add_argument('-w', '--ignore-warnings', help='Ignore warning messages.',
+        arg_parser.add_argument('-w', '--ignore-warnings', help='Игнорировать предупреждения.',
                                 action='store_true')
-        arg_parser.add_argument('-c', '--use-csv', help='Use CSV as output format.',
+        arg_parser.add_argument('-c', '--use-csv', help='Выводить микропрограмму в формате CSV.',
                                 action='store_true')
-        arg_parser.add_argument('-i', '--use-intel-hex', help='Use Intel HEX as output format.',
+        arg_parser.add_argument('-i', '--use-intel-hex', help='Выводить программу в формате Intel-HEX.',
                                 action='store_true')
 
         args = arg_parser.parse_args()
