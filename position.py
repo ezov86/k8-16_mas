@@ -3,7 +3,7 @@ class Position:
         self.line = line
 
     def __str__(self):
-        return f'at line {self.line}'
+        return f'{self.line}'
 
     @staticmethod
     def start():

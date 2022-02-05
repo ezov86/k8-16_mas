@@ -37,7 +37,8 @@ def invalid_syntax(rule: str, sample_num: int, line: int, token: str):
     print(produced_error)
 
     assert isinstance(produced_error, InvalidSyntaxError)
-    assert str(produced_error) == f'ERROR at line {line}: invalid syntax near "{token}".'
+    assert produced_error.position.line == line
+    assert produced_error.p == token
 
     IssuesManager.reset()
 
@@ -47,7 +48,8 @@ def invalid_lexem(rule: str, sample_num: int, line: int, token: str, error_index
     produced_error = IssuesManager.errors[error_index]
 
     assert isinstance(produced_error, LexerError)
-    assert str(produced_error) == f'ERROR at line {line}: invalid token "{token}".'
+    assert produced_error.position.line == line
+    assert produced_error.token == token
 
     IssuesManager.reset()
 

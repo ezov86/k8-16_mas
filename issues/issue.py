@@ -7,5 +7,5 @@ class Issue:
         self.position = position
 
     def __str__(self):
-        pos = '' if self.position is None else f'{str(self.position)}: '
+        pos = '' if self.position is None else f'в строке {str(self.position)}: '
         return f'{pos}{self.msg}.'
