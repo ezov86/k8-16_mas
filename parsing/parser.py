@@ -20,9 +20,9 @@ def p_root(p):
                 | macroinstructions_defs
                 | macros_defs macroinstructions_defs """
     if len(p) == 3:
-        p[0] = Root(p[1], p[2]).set_position(Position.start())
+        p[0] = Root(p[1], p[2]).set_pos(Position.start())
     elif len(p) == 2:
-        p[0] = Root([], p[1]).set_position(Position.start())
+        p[0] = Root([], p[1]).set_pos(Position.start())
     else:
         p[0] = Root([], [])
 
@@ -41,12 +41,12 @@ def p_macros_def(p):
 
 def p_inline_macros_def(p):
     """ inline_macros_def : INLINE_MACROS id_with_params microinstruction """
-    p[0] = MacrosDefinition(p[2][0], p[2][1], [p[3]], is_inline=True).set_position(Position.from_parser_ctx(p))
+    p[0] = MacrosDef(p[2][0], p[2][1], [p[3]], is_inline=True).set_pos(Position.from_parser_ctx(p))
 
 
 def p_multiline_macros_def(p):
     """ multiline_macros_def    : MULTILINE_MACROS id_with_params LBRACE microinstructions_with_labels RBRACE  """
-    p[0] = MacrosDefinition(p[2][0], p[2][1], p[4]).set_position(Position.from_parser_ctx(p))
+    p[0] = MacrosDef(p[2][0], p[2][1], p[4]).set_pos(Position.from_parser_ctx(p))
 
 
 def p_macroinstructions_defs(p):
@@ -57,7 +57,7 @@ def p_macroinstructions_defs(p):
 
 def p_macroinstruction_def(p):
     """ macroinstruction_def    : MACROINSTRUCTION id_with_params LBRACE microinstructions_with_labels RBRACE """
-    p[0] = MacroinstructionDefinition(p[2][0], p[2][1], p[4]).set_position(Position.from_parser_ctx(p))
+    p[0] = MacroinstDef(p[2][0], p[2][1], p[4]).set_pos(Position.from_parser_ctx(p))
 
 
 def p_microinstructions_with_labels(p):
@@ -79,10 +79,10 @@ def p_microinstruction_with_label(p):
 def p_microinstruction(p):
     """ microinstruction    : bit_masks SEMICOLON
                             | bit_masks AT ID SEMICOLON """
-    p[0] = Microinstruction(p[1]).set_position(Position.from_parser_ctx(p))
+    p[0] = Microinst(p[1]).set_pos(Position.from_parser_ctx(p))
 
     if len(p) == 5:
-        p[0].next_microinstruction_label = p[3]
+        p[0].next_microinst_label = p[3]
 
 
 def p_bit_masks(p):
@@ -93,7 +93,7 @@ def p_bit_masks(p):
 
 def p_bit_mask(p):
     """ bit_mask    : id_with_params """
-    p[0] = BitMask(p[1][0], p[1][1]).set_position(Position.from_parser_ctx(p))
+    p[0] = BitMask(p[1][0], p[1][1]).set_pos(Position.from_parser_ctx(p))
 
 
 def p_id_with_params(p):

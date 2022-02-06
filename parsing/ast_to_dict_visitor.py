@@ -22,32 +22,32 @@ class AstToDictVisitor(Visitor):
             'params': n.params
         }
 
-    def visit_microinstruction(self, n: Microinstruction) -> dict:
+    def visit_microinst(self, n: Microinst) -> dict:
         return {
             'bit_masks': [self.visit(bit_mask) for bit_mask in n.bit_masks],
             'label': n.label,
-            'next_microinstruction_label': n.next_microinstruction_label
+            'next_microinstruction_label': n.next_microinst_label
         }
 
-    def visit_definition(self, n: Definition) -> dict:
+    def visit_def(self, n: Def) -> dict:
         return {
             'name': n.name,
             'params': n.params,
             'microinstructions': [self.visit(microinstruction) for microinstruction in n.body]
         }
 
-    def visit_macros_definition(self, n: MacrosDefinition) -> dict:
+    def visit_macros_def(self, n: MacrosDef) -> dict:
         return {
-            **self.visit_definition(n),
+            **self.visit_def(n),
             'is_inline': n.is_inline
         }
 
-    def visit_macroinstruction_definition(self, n: MacroinstructionDefinition) -> dict:
-        return self.visit_definition(n)
+    def visit_macroinst_def(self, n: MacroinstDef) -> dict:
+        return self.visit_def(n)
 
     def visit_root(self, node: Root) -> dict:
         return {
             'macros_defs': [self.visit(macros_def) for macros_def in node.macros_defs],
-            'macroinstructions_defs':
-                [self.visit(macroinstruction) for macroinstruction in node.macroinstructions_defs]
+            'macroinst_defs':
+                [self.visit(macroinstruction) for macroinstruction in node.macroinst_defs]
         }

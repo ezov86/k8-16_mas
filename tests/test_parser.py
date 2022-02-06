@@ -1,6 +1,6 @@
 from args.manager import ArgsManager
 from issues.manager import IssuesManager
-from parsing.ast import Root, Microinstruction, MacroinstructionDefinition, BitMask, MacrosDefinition
+from parsing.ast import Root, Microinst, MacroinstDef, BitMask, MacrosDef
 from parsing.ast_to_dict_visitor import AstToDictVisitor
 from parsing.errors import UnexpectedEofError, InvalidSyntaxError, LexerError
 from parsing.stage import ParsingStage
@@ -142,7 +142,7 @@ def assert_ast(sample_name: str, expected_ast: Root):
     assert visitor.visit(produced_ast) == visitor.visit(expected_ast)
 
 
-nop_body = [Microinstruction([BitMask('!nop', [])])]
+nop_body = [Microinst([BitMask('!nop', [])])]
 
 
 # Valid samples.
@@ -154,9 +154,9 @@ def test_empty():
 
 def test_comments():
     expected_ast = Root([], [
-        MacroinstructionDefinition('i1', [], [
-            Microinstruction([BitMask('a', [])]),
-            Microinstruction([BitMask('c', []), BitMask('d', [])])
+        MacroinstDef('i1', [], [
+            Microinst([BitMask('a', [])]),
+            Microinst([BitMask('c', []), BitMask('d', [])])
         ])
     ])
     assert_ast('comments', expected_ast)
@@ -164,9 +164,9 @@ def test_comments():
 
 def test_params():
     expected_ast = Root([], [
-        MacroinstructionDefinition('i1', ['p1'], nop_body),
-        MacroinstructionDefinition('i2', ['p1', 'p2'], nop_body),
-        MacroinstructionDefinition('i3', ['p1', 'p2', 'p3'], nop_body)
+        MacroinstDef('i1', ['p1'], nop_body),
+        MacroinstDef('i2', ['p1', 'p2'], nop_body),
+        MacroinstDef('i3', ['p1', 'p2', 'p3'], nop_body)
     ])
 
     assert_ast('params', expected_ast)
@@ -174,10 +174,10 @@ def test_params():
 
 def test_id_with_params():
     expected_ast = Root([], [
-        MacroinstructionDefinition('i1', [], nop_body),
-        MacroinstructionDefinition('i2', ['p1'], nop_body),
-        MacroinstructionDefinition('i3', ['p1', 'p2'], nop_body),
-        MacroinstructionDefinition('i4', ['p1', 'p2', 'p3'], nop_body)
+        MacroinstDef('i1', [], nop_body),
+        MacroinstDef('i2', ['p1'], nop_body),
+        MacroinstDef('i3', ['p1', 'p2'], nop_body),
+        MacroinstDef('i4', ['p1', 'p2', 'p3'], nop_body)
     ])
 
     assert_ast('id_with_params', expected_ast)
@@ -185,15 +185,15 @@ def test_id_with_params():
 
 def test_bit_mask():
     expected_ast = Root([], [
-        MacroinstructionDefinition('i1', [], [
-            Microinstruction([
+        MacroinstDef('i1', [], [
+            Microinst([
                 BitMask('a', [])
             ]),
-            Microinstruction([
+            Microinst([
                 BitMask('a', ['1']),
                 BitMask('b', [])
             ]),
-            Microinstruction([
+            Microinst([
                 BitMask('a', []),
                 BitMask('b', ['2']),
                 BitMask('c', [])
@@ -206,19 +206,19 @@ def test_bit_mask():
 
 def test_microinstruction():
     expected_ast = Root([], [
-        MacroinstructionDefinition('i1', [], [
-            Microinstruction([
+        MacroinstDef('i1', [], [
+            Microinst([
                 BitMask('a', [])
-            ], next_microinstruction_label='l1'),
-            Microinstruction([
+            ], next_microinst_label='l1'),
+            Microinst([
                 BitMask('a', []),
                 BitMask('b', []),
                 BitMask('c', [])
-            ], next_microinstruction_label='l2'),
-            Microinstruction([
+            ], next_microinst_label='l2'),
+            Microinst([
                 BitMask('a', [])
             ]),
-            Microinstruction([
+            Microinst([
                 BitMask('b', []),
                 BitMask('c', [])
             ])
@@ -230,11 +230,11 @@ def test_microinstruction():
 
 def test_microinstruction_with_label():
     expected_ast = Root([], [
-        MacroinstructionDefinition('i1', [], [
-            Microinstruction([BitMask('a', [])]),
-            Microinstruction([BitMask('b', [])], label='l1'),
-            Microinstruction([BitMask('c', []), BitMask('d', [])]),
-            Microinstruction([BitMask('a', []), BitMask('b', [])], label='l2')
+        MacroinstDef('i1', [], [
+            Microinst([BitMask('a', [])]),
+            Microinst([BitMask('b', [])], label='l1'),
+            Microinst([BitMask('c', []), BitMask('d', [])]),
+            Microinst([BitMask('a', []), BitMask('b', [])], label='l2')
         ]),
     ])
 
@@ -243,17 +243,17 @@ def test_microinstruction_with_label():
 
 def test_macroinstruction_def():
     expected_ast = Root([], [
-        MacroinstructionDefinition('i1', [], [
-            Microinstruction([BitMask('a', [])]),
+        MacroinstDef('i1', [], [
+            Microinst([BitMask('a', [])]),
         ]),
-        MacroinstructionDefinition('i2', ['+', '-'], [
-            Microinstruction([BitMask('a', [])]),
-            Microinstruction([BitMask('b', [])])
+        MacroinstDef('i2', ['+', '-'], [
+            Microinst([BitMask('a', [])]),
+            Microinst([BitMask('b', [])])
         ]),
-        MacroinstructionDefinition('i3', ['1'], [
-            Microinstruction([BitMask('a', [])]),
-            Microinstruction([BitMask('b', [])]),
-            Microinstruction([BitMask('c', [])])
+        MacroinstDef('i3', ['1'], [
+            Microinst([BitMask('a', [])]),
+            Microinst([BitMask('b', [])]),
+            Microinst([BitMask('c', [])])
         ])
     ])
 
@@ -263,20 +263,20 @@ def test_macroinstruction_def():
 def test_multiline_macros_def():
     expected_ast = Root(
         [
-            MacrosDefinition('m1', [], [
-                Microinstruction([BitMask('a', [])]),
+            MacrosDef('m1', [], [
+                Microinst([BitMask('a', [])]),
             ]),
-            MacrosDefinition('m2', ['*'], [
-                Microinstruction([BitMask('a', [])]),
-                Microinstruction([BitMask('b', [])]),
+            MacrosDef('m2', ['*'], [
+                Microinst([BitMask('a', [])]),
+                Microinst([BitMask('b', [])]),
             ]),
-            MacrosDefinition('m3', ['1', '2'], [
-                Microinstruction([BitMask('a', [])]),
-                Microinstruction([BitMask('b', [])]),
-                Microinstruction([BitMask('c', [])])
+            MacrosDef('m3', ['1', '2'], [
+                Microinst([BitMask('a', [])]),
+                Microinst([BitMask('b', [])]),
+                Microinst([BitMask('c', [])])
             ]),
         ],
-        [MacroinstructionDefinition('i1', [], nop_body)]
+        [MacroinstDef('i1', [], nop_body)]
     )
 
     assert_ast('multiline_macros_def', expected_ast)
@@ -285,11 +285,11 @@ def test_multiline_macros_def():
 def test_inline_macros_def():
     expected_ast = Root(
         [
-            MacrosDefinition('mi1', [], [Microinstruction([BitMask('a', [])])], is_inline=True),
-            MacrosDefinition('mi2', ['a'], [Microinstruction([BitMask('a', []), BitMask('b', []), BitMask('c', [])])],
-                             is_inline=True)
+            MacrosDef('mi1', [], [Microinst([BitMask('a', [])])], is_inline=True),
+            MacrosDef('mi2', ['a'], [Microinst([BitMask('a', []), BitMask('b', []), BitMask('c', [])])],
+                      is_inline=True)
         ],
-        [MacroinstructionDefinition('i1', [], nop_body)]
+        [MacroinstDef('i1', [], nop_body)]
     )
 
     assert_ast('inline_macros_def', expected_ast)
@@ -298,12 +298,12 @@ def test_inline_macros_def():
 def test_macros_def():
     expected_ast = Root(
         [
-            MacrosDefinition('m1', [], nop_body),
-            MacrosDefinition('mi1', [], nop_body, is_inline=True),
-            MacrosDefinition('m2', [], nop_body),
-            MacrosDefinition('mi2', [], nop_body, is_inline=True)
+            MacrosDef('m1', [], nop_body),
+            MacrosDef('mi1', [], nop_body, is_inline=True),
+            MacrosDef('m2', [], nop_body),
+            MacrosDef('mi2', [], nop_body, is_inline=True)
         ],
-        [MacroinstructionDefinition('i1', [], nop_body)]
+        [MacroinstDef('i1', [], nop_body)]
     )
 
     assert_ast('macros_def', expected_ast)
@@ -311,8 +311,8 @@ def test_macros_def():
 
 def test_root():
     expected_ast = Root(
-        [MacrosDefinition('m1', [], nop_body)],
-        [MacroinstructionDefinition('i1', [], nop_body)]
+        [MacrosDef('m1', [], nop_body)],
+        [MacroinstDef('i1', [], nop_body)]
     )
 
     assert_ast('root', expected_ast)
