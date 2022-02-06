@@ -124,6 +124,7 @@ def test_invalid_inline_macros_def():
     eof(rule, 0)
     invalid_syntax(rule, 1, 1, '|')
     invalid_syntax(rule, 2, 2, 'a')
+    invalid_syntax(rule, 3, 1, '@')
 
 
 def test_invalid_root():

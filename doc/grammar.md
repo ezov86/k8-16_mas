@@ -18,15 +18,17 @@ S' ::= ϵ | (<macros_def>* <macroinstruction_def>+)
 
 <macros_def> ::= <inline_macros_def> | <multiline_macros_def>
 
-<inline_macros_def> ::= '%mi' <id_with_params> <microinstruction>
+<inline_macros_def> ::= '%mi' <id_with_params> <microinstruction> ';'
 
 <multiline_macros_def> ::= '%m' <id_with_params> '{' <microinstruction_with_label>+ '}'
 
 <macroinstruction_def> ::= '%i' <id_with_params> '{' <microinstruction_with_label>+ '}'
 
-<microinstruction_with_label> ::= [<id> ':'] <microinstruction>
+<microinstruction_with_label> ::= [<id> ':'] <microinstruction_with_next_label>
 
-<microinstruction> ::= <bit_masks> ['@' <id>] ';'
+<microinstruction_with_next_label> ::= <microinstruction> ['@' <id>] ';'
+
+<microinstruction> ::= <bit_masks>
 
 <bit_masks> ::= <id_with_params> ('|' <id_with_params>)*
 

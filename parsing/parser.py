@@ -40,7 +40,7 @@ def p_macros_def(p):
 
 
 def p_inline_macros_def(p):
-    """ inline_macros_def : INLINE_MACROS id_with_params microinstruction """
+    """ inline_macros_def : INLINE_MACROS id_with_params microinstruction SEMICOLON """
     p[0] = MacrosDef(p[2][0], p[2][1], [p[3]], is_inline=True).set_pos(Position.from_parser_ctx(p))
 
 
@@ -67,8 +67,8 @@ def p_microinstructions_with_labels(p):
 
 
 def p_microinstruction_with_label(p):
-    """ microinstruction_with_label : microinstruction
-                                    | ID COLON microinstruction """
+    """ microinstruction_with_label : microinstruction_with_next_label
+                                    | ID COLON microinstruction_with_next_label """
     if len(p) == 2:
         p[0] = p[1]
     else:
@@ -76,13 +76,18 @@ def p_microinstruction_with_label(p):
         p[0].label = p[1]
 
 
-def p_microinstruction(p):
-    """ microinstruction    : bit_masks SEMICOLON
-                            | bit_masks AT ID SEMICOLON """
-    p[0] = Microinst(p[1]).set_pos(Position.from_parser_ctx(p))
+def p_microinstruction_with_next_label(p):
+    """ microinstruction_with_next_label    : microinstruction SEMICOLON
+                                            | microinstruction AT ID SEMICOLON """
+    p[0] = p[1]
 
     if len(p) == 5:
         p[0].next_microinst_label = p[3]
+
+
+def p_microinstruction(p):
+    """ microinstruction    : bit_masks """
+    p[0] = Microinst(p[1]).set_pos(Position.from_parser_ctx(p))
 
 
 def p_bit_masks(p):
