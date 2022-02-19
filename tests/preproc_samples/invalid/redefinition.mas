@@ -1,0 +1,54 @@
+%m mm1 {
+    !nop;
+}
+
+%m mm1 {
+    !nop;
+}
+
+
+%m mm1(a, b) {
+    !nop;
+}
+
+%m mm1(a, b) {
+    !nop;
+}
+
+
+
+%mi mi1 !nop;
+%mi mi1 !nop;
+
+%mi mi1(a, b) !nop;
+%mi mi1(a, b) !nop;
+
+
+
+%i i1 {
+    !nop;
+}
+
+%i i1 {
+    !nop;
+}
+
+
+%i i1(a, b) {
+    !nop;
+}
+
+%i i1(a, b) {
+    !nop;
+l:
+    a;
+}
+
+%i i2 {
+l:
+    a;
+.l:
+    b;
+.l:
+    c;
+}

@@ -1,0 +1,33 @@
+{
+  "name": "test",
+
+  "mi_bits": 10,
+  "nmip_bits": 4,
+  "inst_opc_bits": 4,
+
+  "control_bits": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f"
+  ],
+
+  "conflicting_control_bits": [
+    {
+      "bits": [
+        "a",
+        "b"
+      ],
+      "cond": []
+    },
+    {
+      "bits": [
+        "a",
+        "c"
+      ],
+      "cond": ["f"]
+    }
+  ]
+}

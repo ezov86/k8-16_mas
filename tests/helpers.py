@@ -28,3 +28,12 @@ def get_test_path(test_name: str, path_in_samples_dir: str, is_valid: bool) -> s
 
 def reset_lexer():
     lexer.lineno = 1
+
+
+def tabs_to_spaces(text: str) -> str:
+    return text.replace('\t', '    ')
+
+
+def load_file(path: str) -> str:
+    with open(path) as f:
+        return f.read()

@@ -1,0 +1,17 @@
+# Labels:
+# name - address - parent
+
+
+
+# Macroinstructions:
+%i i1 {
+    a;
+    a | b @l;
+    c;
+}
+
+%i i2 {
+    a(1, 2, 3);
+    !nop;
+}
+

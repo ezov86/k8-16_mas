@@ -1,0 +1,51 @@
+# Labels:
+# name - address - parent
+
+
+
+# Macroinstructions:
+%i i {
+    a | b | c;
+    a;
+    a | b | c;
+    a;
+    b @l;
+    a | b | c;
+    a | b | c;
+    a;
+    b @l;
+    a | b | c;
+    b @l;
+    a;
+    a | b | c;
+    a;
+    b @l;
+    a | b | c;
+    a | b | c;
+    a;
+    b @l;
+    a | b | c;
+    b @l;
+    a;
+    a | b | c;
+    a;
+    b @l;
+    a | b | c;
+    a | b | c;
+    a;
+    b @l;
+    a | b | c;
+    b @l;
+    a;
+    a | b | c;
+    a;
+    b @l;
+    a | b | c;
+    a | b | c;
+    a;
+    b @l;
+    a | b | c;
+    b @l;
+    a | b | c;
+}
+

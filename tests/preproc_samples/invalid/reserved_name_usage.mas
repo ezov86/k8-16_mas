@@ -1,0 +1,20 @@
+%m b {
+    !nop;
+}
+
+%mi c(1) !nop;
+
+%i d(1, 2) {
+!nop:
+    !nop;
+}
+
+%i a {
+c:
+    !nop;
+}
+
+%i !nop {
+d:
+    !nop;
+}

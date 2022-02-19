@@ -1,0 +1,43 @@
+%mi mi a | b | c;
+
+%m m1 {
+    mi;
+}
+
+%m m2 {
+    m1;
+    a;
+    b @l;
+    m1;
+}
+
+%m m3 {
+    a;
+    m2;
+    m2;
+    b @l;
+}
+
+%m m4 {
+    m3;
+}
+
+%m m5 {
+    m4;
+    m3;
+}
+
+# mi = a | b |c
+# m1 = { a | b | c; }
+# m2 = { m1; a; b @l; m1; } = { a | b | c; a; b @l; a | b | c; }
+# m3 = { a; m2; m2; b @l; } = { a; a | b | c; a; b @l; a | b | c; a | b | c; a; b @l; a | b | c; b @l; }
+# m4 = { m3 } = { a; a | b | c; a; b @l; a | b | c; a | b | c; a; b @l; a | b | c; b @l; }
+# m5 = { m4; m3; } = { a; a | b | c; a; b @l; a | b | c; a | b | c; a; b @l; a | b | c; b @l; a; a | b | c; a; b @l; a | b | c; a | b | c; a; b @l; a | b | c; b @l; }
+
+%i i {
+    m1;
+    m4;
+    m5;
+    m3;
+    m1;
+}

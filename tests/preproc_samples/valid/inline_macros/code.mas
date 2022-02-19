@@ -1,0 +1,17 @@
+%mi mi1 a | b | c;
+%mi mi2 mi1;
+%mi mi3 mi2 | a;
+%mi mi4 a | mi3 | b;
+
+# mi1 =                     a | b | c
+# mi2 = mi1 =               a | b | c
+# mi3 = mi2 | a =           a | b | c | a
+# mi4 = a | mi3 | b =       a | a | b | c | a | b
+
+%i i {
+    mi1 @l;
+    mi4 | d | e @l;
+    a | mi4 | d;
+    mi3 | mi2;
+    mi1 | mi4 | a @l;
+}
