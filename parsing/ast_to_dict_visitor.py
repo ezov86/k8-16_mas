@@ -1,3 +1,5 @@
+from typing import Optional
+
 from parsing.ast import *
 from visitor import Visitor
 
@@ -6,15 +8,18 @@ class AstToDictVisitor(Visitor):
     def __init__(self, tracking=False):
         self.tracking = tracking
 
-    def visit(self, n: BaseNode, *args, **kwargs) -> dict:
+    def visit(self, n, *args, **kwargs) -> dict:
         r = super().visit(n, *args, **kwargs)
 
-        if self.tracking:
+        if isinstance(n, BaseNode) and self.tracking:
             dic = {'node_type': n.__class__.__name__, 'line': n.position.line, **r}
         else:
             dic = r
 
         return dic
+
+    def visit_none_type(self, n: None) -> None:
+        return n
 
     def visit_bit_mask(self, n: BitMask) -> dict:
         return {
@@ -25,11 +30,11 @@ class AstToDictVisitor(Visitor):
     def visit_microinst(self, n: Microinst) -> dict:
         return {
             'bit_masks': [self.visit(bit_mask) for bit_mask in n.bit_masks],
-            'label': n.label,
-            'next_microinstruction_label': n.next_microinst_label
+            'label_def': n.label_def,
+            'next_microinstruction_label': self.visit(n.next_microinst_label)
         }
 
-    def visit_def(self, n: Def) -> dict:
+    def visit_def(self, n: DefWithBody) -> dict:
         return {
             'name': n.name,
             'params': n.params,
@@ -50,4 +55,10 @@ class AstToDictVisitor(Visitor):
             'macros_defs': [self.visit(macros_def) for macros_def in node.macros_defs],
             'macroinst_defs':
                 [self.visit(macroinstruction) for macroinstruction in node.macroinst_defs]
+        }
+
+    def visit_label(self, node: Label) -> dict:
+        return {
+            'name': node.name,
+            'is_local': node.is_local
         }

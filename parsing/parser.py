@@ -73,7 +73,7 @@ def p_microinstruction_with_label(p):
         p[0] = p[1]
     else:
         p[0] = p[3]
-        p[0].label = p[1]
+        p[0].label_def = p[1]
 
 
 def p_microinstruction_with_next_label(p):
@@ -82,7 +82,7 @@ def p_microinstruction_with_next_label(p):
     p[0] = p[1]
 
     if len(p) == 5:
-        p[0].next_microinst_label = p[3]
+        p[0].next_microinst_label = Label(p[3]).set_pos(Position.from_parser_ctx(p))
 
 
 def p_microinstruction(p):

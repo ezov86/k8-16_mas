@@ -1,6 +1,6 @@
 from args.manager import ArgsManager
 from issues.manager import IssuesManager
-from parsing.ast import Root, Microinst, MacroinstDef, BitMask, MacrosDef
+from parsing.ast import *
 from parsing.ast_to_dict_visitor import AstToDictVisitor
 from parsing.errors import UnexpectedEofError, InvalidSyntaxError, LexerError
 from parsing.stage import ParsingStage
@@ -210,12 +210,12 @@ def test_microinstruction():
         MacroinstDef('i1', [], [
             Microinst([
                 BitMask('a', [])
-            ], next_microinst_label='l1'),
+            ], next_microinst_label=Label('l1')),
             Microinst([
                 BitMask('a', []),
                 BitMask('b', []),
                 BitMask('c', [])
-            ], next_microinst_label='l2'),
+            ], next_microinst_label=Label('l2')),
             Microinst([
                 BitMask('a', [])
             ]),
@@ -233,9 +233,9 @@ def test_microinstruction_with_label():
     expected_ast = Root([], [
         MacroinstDef('i1', [], [
             Microinst([BitMask('a', [])]),
-            Microinst([BitMask('b', [])], label='l1'),
+            Microinst([BitMask('b', [])], label_def='l1'),
             Microinst([BitMask('c', []), BitMask('d', [])]),
-            Microinst([BitMask('a', []), BitMask('b', [])], label='l2')
+            Microinst([BitMask('a', []), BitMask('b', [])], label_def='l2')
         ]),
     ])
 
