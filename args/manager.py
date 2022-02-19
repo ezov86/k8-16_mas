@@ -5,3 +5,5 @@ class ArgsManager:
     use_csv = False
     use_intel_hex = False
     ignore_errors = False
+    cpu_config_path = 'default_cpu_config.json'
+    stop_after_preprocessing = False

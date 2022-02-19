@@ -17,6 +17,11 @@ class ArgsParsingStage(BaseStage):
                                 action='store_true')
         arg_parser.add_argument('-i', '--use-intel-hex', help='Выводить программу в формате Intel-HEX.',
                                 action='store_true')
+        arg_parser.add_argument('--cpu-config-path', help='Указать путь к конфигурации процессора.',
+                                action='store', default=ArgsManager.cpu_config_path)
+        arg_parser.add_argument('-r', '--stop-after-preprocessing', help='Остановиться после работы препроцессора и '
+                                                                         'вывести обработанное дерево в формате JSON.',
+                                action='store_true')
 
         args = arg_parser.parse_args()
 
@@ -25,5 +30,7 @@ class ArgsParsingStage(BaseStage):
         ArgsManager.ignore_warnings = args.ignore_warnings
         ArgsManager.use_csv = args.use_csv
         ArgsManager.use_intel_hex = args.use_intel_hex
+        ArgsManager.cpu_config_path = args.cpu_config_path
+        ArgsManager.stop_after_preprocessing = args.stop_after_preprocessing
 
         return super().handle(ArgsManager)
