@@ -1,4 +1,4 @@
-from typing import List, NewType, Union
+from typing import List
 
 from position import Position
 

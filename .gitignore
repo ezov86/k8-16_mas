@@ -1,6 +1,6 @@
 venv/
-/parsing/parsetab.py
-/parsing/parser.out
+parsetab.py
+parser.out
 __pycache__/
 .idea/
 .coverage

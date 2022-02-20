@@ -1,46 +1,42 @@
 import helpers
-from args.manager import ArgsManager
-from cpu.stage import CpuConfigLoadingStage
+from stages.cpu import CpuConfigLoadingStage
+from def_repo import ReservedNameUsageError, RedefinitionError, SpecialSymbolsInNameWarning, SameNameWarning
 
-from issues.manager import IssuesManager
-from parsing.stage import ParsingStage
-from preproc.errors import *
-from preproc.pt_to_code import PtToCodeVisitor
-from preproc.stage import PreprocessingStage
-from preproc.warnings import *
+from stages.parsing import CodeParsing
+from stages.preproc import *
 
 
 def get_preproc_sample_path(path_in_samples_dir: str, is_valid: bool) -> str:
     return helpers.get_test_path('preproc', path_in_samples_dir, is_valid)
 
 
-pas = ParsingStage()
+pas = CodeParsing()
 ccs = CpuConfigLoadingStage()
 prs = PreprocessingStage()
 
 pas.set_next(ccs).set_next(prs)
 
 
-def preprocess(path: str):
-    ArgsManager.source_file_path = path
-    ArgsManager.cpu_config_path = helpers.get_path('preproc', 'test_config.json')
+def preprocess(path: str) -> Context:
+    context = helpers.new_context()
+    context.args.source_file_path = path
+    context.args.cpu_config_path = helpers.get_path('preproc', 'test_config.json')
 
-    pt = pas.handle(ArgsManager)
+    context = pas.handle(context)
     helpers.reset_lexer()
 
-    return pt
+    return context
 
 
 def assert_issues(sample_name: str, expected_issues: list):
-    preprocess(get_preproc_sample_path(sample_name, is_valid=False))
+    context = preprocess(get_preproc_sample_path(sample_name, is_valid=False))
+    real_issues = context.errors + context.warnings
 
-    real_issues = IssuesManager.errors + IssuesManager.warnings
     assert len(real_issues) == len(expected_issues)
-
     for expected_error, real_error in zip(real_issues, expected_issues):
         assert str(real_error) == str(expected_error)
 
-    IssuesManager.reset()
+    helpers.reset_lexer()
 
 
 def test_invalid_reserved_name_usage():
@@ -116,12 +112,12 @@ def test_special_symbols_in_name_warning():
 
 
 def valid(sample_name: str):
-    real_pt = preprocess(get_preproc_sample_path(f'{sample_name}/code', is_valid=True))
+    real_pt = preprocess(get_preproc_sample_path(f'{sample_name}/code', is_valid=True)).pt
     expected_code_path = get_preproc_sample_path(f'{sample_name}/expected', is_valid=True)
 
     expected_code = helpers.load_file(expected_code_path)
 
-    assert helpers.tabs_to_spaces(PtToCodeVisitor().visit(real_pt)) \
+    assert helpers.tabs_to_spaces(PtToCode().visit(real_pt)) \
            == helpers.tabs_to_spaces(expected_code)
 
 

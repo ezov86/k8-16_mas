@@ -1,26 +1,67 @@
 from copy import copy
-from typing import Optional
+from typing import NewType, Union, Optional
 
-from def_repo import *
-from parsing.ast import *
-from preproc.errors import *
-from preproc.pt import PreprocessedTree, LabelDef
+from assembler_ast import *
+from context import Context
+from def_repo import LabelDefsRepo, DefsWithBodyRepo
+from issue import AssemblyError
+from pt import LabelDef, PreprocessedTree
+from visitors.pt_to_code import PtToCode
+from stage import Stage
 from visitor import Visitor
+
+
+class MultilineMacrosUsedAsInlineError(AssemblyError):
+    def __init__(self, name: str, position: Position):
+        self.name = name
+        super().__init__(f'многострочный макрос "{name}" использован как однострочный', position)
+
+
+class GlobalLabelInMacrosError(AssemblyError):
+    def __init__(self, label_name: str, macros_name: str, position: Position):
+        self.label_name = label_name
+        self.macros_name = macros_name
+        super().__init__(f'глобальная метка "{label_name}" объявлена в макросе "{macros_name}"', position)
+
+
+class NextMicroinstLabelAfterMacrosError(AssemblyError):
+    def __init__(self, position: Position):
+        super().__init__(f'метка перехода установлена после макроса', position)
+
+
+class MultilineMacrosInInlineError(AssemblyError):
+    def __init__(self, position: Position):
+        super().__init__(f'использование многострочного макроса в однострочном', position)
+
 
 Def = NewType('Def', Union[DefWithBody, LabelDef])
 
 
+class PreprocessingStage(Stage):
+    def handle(self, context: Context) -> List[MacroinstDef]:
+        context.pt = AstToPt(context).visit(context.ast)
+
+        if context.args.stop_after_preprocessing:
+            print(PtToCode(tracking=True).visit(context.pt))
+            super().check_for_issues(context)
+            exit(0)
+
+        return super().handle(context)
+
+
 class AstToPt(Visitor):
-    def __init__(self):
+    def __init__(self, context: Context):
         self.last_relative_address = 0
         self.unique_label_id = 0
 
-        self.labels = LabelDefsRepo()
+        self.context = context
 
-        self.macros = DefsWithBodyRepo()
-        self.macroinsts = DefsWithBodyRepo()
-        self.macros.another = self.macroinsts
-        self.macroinsts.another = self.macros
+        self.labels = LabelDefsRepo(context)
+
+        self.macros = DefsWithBodyRepo(context)
+        self.macroinsts = DefsWithBodyRepo(context)
+        self.macros.another_repo = self.macroinsts
+        self.macroinsts.another_repo = self.macros
 
     def visit_bit_mask(self, n: BitMask, is_single: bool) -> List[BitMask]:
         definition = self.macros.find(n.full_name())
@@ -30,7 +71,7 @@ class AstToPt(Visitor):
 
         if not (definition.is_inline or is_single):
             # Использование многострочного макроса с другими масками в одной микроинструкции.
-            MultilineMacrosUsedAsInlineError(definition.full_name(), n.position).handle()
+            self.context.handle_issue(MultilineMacrosUsedAsInlineError(definition.full_name(), n.position))
             return []
 
         return definition.body[0].bit_masks
@@ -91,10 +132,10 @@ class AstToPt(Visitor):
             if macros is not None and not macros.is_inline:
                 # Эта микроинструкция раскрывается в многострочный макрос.
                 if n.next_microinst_label is not None:
-                    NextMicroinstLabelAfterMacrosError(n.position).handle()
+                    self.context.handle_issue(NextMicroinstLabelAfterMacrosError(n.position))
 
                 if isinstance(parent_def, MacrosDef) and parent_def.is_inline:
-                    MultilineMacrosInInlineError(n.position).handle()
+                    self.context.handle_issue(MultilineMacrosInInlineError(n.position))
 
                 body = self.convert_macros_labels(macros, parent_def)
                 self.unique_label_id += 1
@@ -132,7 +173,7 @@ class AstToPt(Visitor):
                 if isinstance(parent_def, MacrosDef):
                     # В макросе.
                     error = True
-                    GlobalLabelInMacrosError(n.label_def, parent_def.name, n.position).handle()
+                    self.context.handle_issue(GlobalLabelInMacrosError(n.label_def, parent_def.name, n.position))
 
                 full_label_name = n.label_def
 

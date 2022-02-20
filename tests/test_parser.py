@@ -1,9 +1,8 @@
-from args.manager import ArgsManager
-from issues.manager import IssuesManager
-from parsing.ast import *
-from parsing.ast_to_dict_visitor import AstToDictVisitor
-from parsing.errors import UnexpectedEofError, InvalidSyntaxError, LexerError
-from parsing.stage import ParsingStage
+from context import Context
+from assembler_ast import *
+from visitors.ast_to_dict import AstToDict
+from stages.parsing import UnexpectedEofError, InvalidSyntaxError, LexerError
+from stages.parsing import CodeParsing
 import helpers
 
 
@@ -11,27 +10,28 @@ def get_parser_sample_path(path_in_samples_dir: str, is_valid: bool) -> str:
     return helpers.get_test_path('parser', path_in_samples_dir, is_valid)
 
 
-def parse(path: str):
-    ArgsManager.source_file_path = path
+def parse(path: str) -> Context:
+    context = helpers.new_context()
+    context.args.source_file_path = path
+    context = CodeParsing().handle(context)
 
-    ast = ParsingStage().handle(ArgsManager)
     helpers.reset_lexer()
 
-    return ast
+    return context
 
 
 def eof(rule: str, sample_num: int):
-    parse(get_parser_sample_path(f'{rule}/{sample_num}', is_valid=False))
-    produced_error = IssuesManager.errors[-1]
+    context = parse(get_parser_sample_path(f'{rule}/{sample_num}', is_valid=False))
+    produced_error = context.errors[-1]
 
     assert isinstance(produced_error, UnexpectedEofError)
 
-    IssuesManager.reset()
+    context.reset_issues()
 
 
 def invalid_syntax(rule: str, sample_num: int, line: int, token: str):
-    parse(get_parser_sample_path(f'{rule}/{sample_num}', is_valid=False))
-    produced_error = IssuesManager.errors[-1]
+    context = parse(get_parser_sample_path(f'{rule}/{sample_num}', is_valid=False))
+    produced_error = context.errors[-1]
 
     print(produced_error)
 
@@ -39,18 +39,18 @@ def invalid_syntax(rule: str, sample_num: int, line: int, token: str):
     assert produced_error.position.line == line
     assert produced_error.p == token
 
-    IssuesManager.reset()
+    context.reset_issues()
 
 
 def invalid_lexem(rule: str, sample_num: int, line: int, token: str, error_index: int):
-    parse(get_parser_sample_path(f'{rule}/{sample_num}', is_valid=False))
-    produced_error = IssuesManager.errors[error_index]
+    context = parse(get_parser_sample_path(f'{rule}/{sample_num}', is_valid=False))
+    produced_error = context.errors[error_index]
 
     assert isinstance(produced_error, LexerError)
     assert produced_error.position.line == line
     assert produced_error.token == token
 
-    IssuesManager.reset()
+    context.reset_issues()
 
 
 # Invalid samples.
@@ -137,8 +137,8 @@ def test_invalid_root():
 
 # Valid samples helpers.
 def assert_ast(sample_name: str, expected_ast: Root):
-    produced_ast = parse(get_parser_sample_path(sample_name, is_valid=True))
-    visitor = AstToDictVisitor(tracking=False)
+    produced_ast = parse(get_parser_sample_path(sample_name, is_valid=True)).ast
+    visitor = AstToDict(tracking=False)
 
     assert visitor.visit(produced_ast) == visitor.visit(expected_ast)
 

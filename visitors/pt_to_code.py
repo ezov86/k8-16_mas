@@ -1,11 +1,11 @@
 from typing import Optional
+from assembler_ast import *
+from pt import PreprocessedTree, LabelDef
 
-from parsing.ast import *
-from preproc.pt import PreprocessedTree, LabelDef
 from visitor import Visitor
 
 
-class PtToCodeVisitor(Visitor):
+class PtToCode(Visitor):
     def __init__(self, tracking=False):
         self.tracking = tracking
 

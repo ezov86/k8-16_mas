@@ -1,5 +1,12 @@
+from assembler_ast import DefWithBody, MacrosDef
 from def_repo import DefsRepo
-from parsing.ast import DefWithBody, MacrosDef
+
+
+class PreprocessedTree:
+    def __init__(self, macroinst_defs: DefsRepo, labels: DefsRepo):
+        super().__init__()
+        self.macroinst_defs = macroinst_defs
+        self.labels = labels
 
 
 class LabelDef(DefWithBody):
@@ -12,10 +19,3 @@ class LabelDef(DefWithBody):
 
     def is_in_macros(self) -> bool:
         return isinstance(self.parent, MacrosDef)
-
-
-class PreprocessedTree:
-    def __init__(self, macroinst_defs: DefsRepo, labels: DefsRepo):
-        super().__init__()
-        self.macroinst_defs = macroinst_defs
-        self.labels = labels

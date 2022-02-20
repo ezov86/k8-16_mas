@@ -1,10 +1,8 @@
-from typing import Optional
-
-from parsing.ast import *
+from assembler_ast import *
 from visitor import Visitor
 
 
-class AstToDictVisitor(Visitor):
+class AstToDict(Visitor):
     def __init__(self, tracking=False):
         self.tracking = tracking
 
