@@ -27,7 +27,7 @@ class AstToDict(Visitor):
     def visit_microinst(self, n: Microinst) -> dict:
         return {
             'bit_masks': [self.visit(bit_mask) for bit_mask in n.bit_masks],
-            'label_def': n.label_def,
+            'label_defs': n.label_defs,
             'next_microinstruction_label': self.visit(n.next_microinst_label)
         }
 

@@ -24,7 +24,7 @@ S' ::= ϵ | (<macros_def>* <macroinstruction_def>+)
 
 <macroinstruction_def> ::= '%i' <id_with_params> '{' <microinstruction_with_label>+ '}'
 
-<microinstruction_with_label> ::= [<id> ':'] <microinstruction_with_next_label>
+<microinstruction_with_label> ::= [<id> (',' <id>)* ':'] <microinstruction_with_next_label>
 
 <microinstruction_with_next_label> ::= <microinstruction> ['@' <id>] ';'
 

@@ -22,10 +22,10 @@ class Label(BaseNode):
 
 
 class Microinst(BaseNode):
-    def __init__(self, bit_masks: List[BitMask], label_def: str = '', next_microinst_label: Label = None):
+    def __init__(self, bit_masks: List[BitMask], label_defs: List[str], next_microinst_label: Label = None):
         super().__init__()
         self.bit_masks = bit_masks
-        self.label_def = label_def
+        self.label_defs = label_defs
         self.next_microinst_label = next_microinst_label
 
 

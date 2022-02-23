@@ -160,12 +160,17 @@ class Parser:
 
     def p_microinstruction_with_label(self, p):
         """ microinstruction_with_label : microinstruction_with_next_label
-                                        | ID COLON microinstruction_with_next_label """
+                                        | labels_defs COLON microinstruction_with_next_label """
         if len(p) == 2:
             p[0] = p[1]
         else:
             p[0] = p[3]
-            p[0].label_def = p[1]
+            p[0].label_defs = p[1]
+
+    def p_labels_defs(self, p):
+        """ labels_defs :   ID
+                        |   ID COMMA labels_defs """
+        self.list_rule(p, 3)
 
     def p_microinstruction_with_next_label(self, p):
         """ microinstruction_with_next_label    : microinstruction SEMICOLON
@@ -178,7 +183,7 @@ class Parser:
 
     def p_microinstruction(self, p):
         """ microinstruction    : bit_masks """
-        p[0] = Microinst(p[1])
+        p[0] = Microinst(p[1], [])
         p[0].position = Position.from_parser_ctx(p)
 
     def p_bit_masks(self, p):
