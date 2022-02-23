@@ -7,44 +7,11 @@ class BaseNode:
     def __init__(self, position: Position = None):
         self.position = position
 
-    def set_pos(self, position: Position):
-        self.position = position
-        return self
 
-
-class NamedNode(BaseNode):
-    def full_name(self) -> str:
-        """ abstract """
-        raise NotImplementedError()
-
-
-class OnlyNameNode(BaseNode):
+class BitMask(BaseNode):
     def __init__(self, name: str):
         super().__init__()
         self.name = name
-
-    def full_name(self) -> str:
-        return self.name
-
-
-class NamedNodeWithParams(BaseNode):
-    def __init__(self, name: str, params: List[str]):
-        super().__init__()
-        self.name = name
-        self.params = params
-
-    def full_name(self) -> str:
-        if self.params:
-            params_str = f'({", ".join(self.params)})'
-        else:
-            params_str = ''
-
-        return self.name + params_str
-
-
-class BitMask(NamedNodeWithParams):
-    def __init__(self, name: str, params: List[str]):
-        super().__init__(name, params)
 
 
 class Label(BaseNode):
@@ -62,23 +29,22 @@ class Microinst(BaseNode):
         self.next_microinst_label = next_microinst_label
 
 
-class DefWithBody(NamedNodeWithParams):
-    def __init__(self, name: str, params: List[str], body: List[Microinst]):
-        super().__init__(name, params)
+class MacrosDef(BaseNode):
+    def __init__(self, name: str, body: List[Microinst], is_inline: bool = False):
+        super().__init__()
+        self.name = name
         self.body = body
-
-
-class MacrosDef(DefWithBody):
-    def __init__(self, name: str, params: List[str], body: List[Microinst], is_inline: bool = False):
-        super().__init__(name, params, body)
         self.is_inline = is_inline
 
 
-class MacroinstDef(DefWithBody):
-    pass
+class MacroinstDef(BaseNode):
+    def __init__(self, name: str, body: List[Microinst]):
+        super().__init__()
+        self.name = name
+        self.body = body
 
 
-class Root(BaseNode):
+class Root:
     def __init__(self, macros_defs: List[MacrosDef], macroinst_defs: List[MacroinstDef]):
         super().__init__()
         self.macros_defs = macros_defs

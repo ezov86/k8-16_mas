@@ -109,14 +109,17 @@ class Parser:
 
         return p[0]
 
+    def get_name_with_params(self, name: str, params: List[str]) -> str:
+        return f'{name}({", ".join(params)})'
+
     def p_root(self, p):
         """ root    :
                     | macroinstructions_defs
                     | macros_defs macroinstructions_defs """
         if len(p) == 3:
-            p[0] = Root(p[1], p[2]).set_pos(Position.start())
+            p[0] = Root(p[1], p[2])
         elif len(p) == 2:
-            p[0] = Root([], p[1]).set_pos(Position.start())
+            p[0] = Root([], p[1])
         else:
             p[0] = Root([], [])
 
@@ -132,11 +135,13 @@ class Parser:
 
     def p_inline_macros_def(self, p):
         """ inline_macros_def : INLINE_MACROS id_with_params microinstruction SEMICOLON """
-        p[0] = MacrosDef(p[2][0], p[2][1], [p[3]], is_inline=True).set_pos(Position.from_parser_ctx(p))
+        p[0] = MacrosDef(p[2], [p[3]], is_inline=True)
+        p[0].position = Position.from_parser_ctx(p)
 
     def p_multiline_macros_def(self, p):
         """ multiline_macros_def    : MULTILINE_MACROS id_with_params LBRACE microinstructions_with_labels RBRACE  """
-        p[0] = MacrosDef(p[2][0], p[2][1], p[4]).set_pos(Position.from_parser_ctx(p))
+        p[0] = MacrosDef(p[2], p[4])
+        p[0].position = Position.from_parser_ctx(p)
 
     def p_macroinstructions_defs(self, p):
         """ macroinstructions_defs  : macroinstruction_def
@@ -145,7 +150,8 @@ class Parser:
 
     def p_macroinstruction_def(self, p):
         """ macroinstruction_def    : MACROINSTRUCTION id_with_params LBRACE microinstructions_with_labels RBRACE """
-        p[0] = MacroinstDef(p[2][0], p[2][1], p[4]).set_pos(Position.from_parser_ctx(p))
+        p[0] = MacroinstDef(p[2], p[4])
+        p[0].position = Position.from_parser_ctx(p)
 
     def p_microinstructions_with_labels(self, p):
         """ microinstructions_with_labels   : microinstruction_with_label
@@ -167,11 +173,13 @@ class Parser:
         p[0] = p[1]
 
         if len(p) == 5:
-            p[0].next_microinst_label = Label(p[3]).set_pos(Position.from_parser_ctx(p))
+            p[0].next_microinst_label = Label(p[3])
+            p[0].next_microinst_label.position = Position.from_parser_ctx(p)
 
     def p_microinstruction(self, p):
         """ microinstruction    : bit_masks """
-        p[0] = Microinst(p[1]).set_pos(Position.from_parser_ctx(p))
+        p[0] = Microinst(p[1])
+        p[0].position = Position.from_parser_ctx(p)
 
     def p_bit_masks(self, p):
         """ bit_masks   : bit_mask
@@ -180,15 +188,16 @@ class Parser:
 
     def p_bit_mask(self, p):
         """ bit_mask    : id_with_params """
-        p[0] = BitMask(p[1][0], p[1][1]).set_pos(Position.from_parser_ctx(p))
+        p[0] = BitMask(p[1])
+        p[0].position = Position.from_parser_ctx(p)
 
     def p_id_with_params(self, p):
         """ id_with_params  : ID
                             | ID LPAR params RPAR"""
         if len(p) == 2:
-            p[0] = (p[1], [])
+            p[0] = p[1]
         else:
-            p[0] = (p[1], p[3])
+            p[0] = self.get_name_with_params(p[1], p[3])
 
     def p_params(self, p):
         """ params  : ID

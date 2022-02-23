@@ -22,7 +22,6 @@ class AstToDict(Visitor):
     def visit_bit_mask(self, n: BitMask) -> dict:
         return {
             'name': n.name,
-            'params': n.params
         }
 
     def visit_microinst(self, n: Microinst) -> dict:
@@ -32,21 +31,18 @@ class AstToDict(Visitor):
             'next_microinstruction_label': self.visit(n.next_microinst_label)
         }
 
-    def visit_def(self, n: DefWithBody) -> dict:
-        return {
-            'name': n.name,
-            'params': n.params,
-            'microinstructions': [self.visit(microinstruction) for microinstruction in n.body]
-        }
-
     def visit_macros_def(self, n: MacrosDef) -> dict:
         return {
-            **self.visit_def(n),
+            'name': n.name,
+            'body': [self.visit(microinst) for microinst in n.body],
             'is_inline': n.is_inline
         }
 
     def visit_macroinst_def(self, n: MacroinstDef) -> dict:
-        return self.visit_def(n)
+        return {
+            'name': n.name,
+            'body': [self.visit(microinst) for microinst in n.body]
+        }
 
     def visit_root(self, node: Root) -> dict:
         return {
