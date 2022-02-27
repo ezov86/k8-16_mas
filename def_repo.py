@@ -1,5 +1,6 @@
-from typing import Optional
+from typing import Optional, Dict, Union
 
+import pt
 from context import Context
 from issue import AssemblyError, AssemblyWarning
 from position import Position
@@ -45,82 +46,76 @@ class DefsRepo:
     """
 
     def __init__(self, context: Context):
-        self.definitions: dict = {}
+        self.defs: Dict[str, pt.Def] = {}
         self.context = context
         self.builtin_names = [
             *context.cpu_config.control_bits,
             '!nop'
         ]
 
-    def add(self, definition, ignore_special_symbol=False):
-        full_name = definition.full_name()
+    def add(self, d: pt.Def, ignore_spec_symbol=False):
+        if not ignore_spec_symbol:
+            self.check_spec_symbol(d)
 
-        if full_name in self.definitions:
+        if d.name in self.defs:
             self.context.handle_issue(RedefinitionError(
-                definition.full_name(),
-                definition.position,
-                self.definitions[full_name].position
+                d.name,
+                d.position,
+                self.defs[d.name].position
             ))
             return
 
-        if definition.name in self.builtin_names:
-            self.context.handle_issue(ReservedNameUsageError(definition.full_name(), definition.position))
+        if d.name in self.builtin_names:
+            self.context.handle_issue(ReservedNameUsageError(d.name, d.position))
             return
 
-        self.definitions[full_name] = definition
+        self.defs[d.name] = d
 
     def to_dict(self) -> dict:
-        return self.definitions
+        return self.defs
 
     def find(self, full_name: str):
         try:
-            return self.definitions[full_name]
+            return self.defs[full_name]
         except KeyError:
             return None
 
-    def is_in(self, full_name: str) -> bool:
-        return self.find(full_name) is not None
+    def is_in(self, name: str) -> bool:
+        return name in self.defs
 
-    def find_or_fail(self, full_name: str, position_for_error):
-        definition = self.find(full_name)
+    def find_or_fail(self, name: str, pos: Position):
+        d = self.find(name)
 
-        if definition is None:
-            DefNotFoundError(full_name, position_for_error)
+        if d is None:
+            DefNotFoundError(name, pos)
 
-        return definition
+        return d
 
-    def remove(self, full_name: str):
-        del self.definitions[full_name]
+    def remove(self, name: str):
+        del self.defs[name]
 
-    def check_name_for_special_symbols(self, name: str, position: Position):
-        if '~' in name:
-            self.context.handle_issue(SpecialSymbolsInNameWarning(name, '~', position))
+    def check_spec_symbol(self, d: pt.Def):
+        if '~' in d.name:
+            self.context.handle_issue(SpecialSymbolsInNameWarning(d.name, '~', d.position))
 
 
 class LabelDefsRepo(DefsRepo):
-    def add(self, definition, ignore_special_symbol=False):
-        if not ignore_special_symbol:
-            self.check_name_for_special_symbols(definition.local_name, definition.position)
-
-        super().add(definition, ignore_special_symbol)
+    def check_spec_symbol(self, d: pt.LabelDef):
+        if '~' in d.local_name:
+            self.context.handle_issue(SpecialSymbolsInNameWarning(d.local_name, '~', d.position))
 
 
-class DefsWithBodyRepo(DefsRepo):
+class MacroinstOrMacrosDefRepo(DefsRepo):
     def __init__(self, context: Context):
         super().__init__(context)
-
         self.another_repo: Optional[DefsRepo] = None
 
-    def add(self, definition, ignore_special_symbol=False):
-        key = definition.full_name()
-        if not ignore_special_symbol:
-            self.check_name_for_special_symbols(key, definition.position)
+    def add(self, d: Union[pt.MacrosDef, pt.MacroinstDef], ignore_spec_symbol=False):
+        super().add(d, ignore_spec_symbol)
 
-        super().add(definition, ignore_special_symbol)
-
-        if self.another_repo is not None and self.another_repo.is_in(key):
+        if self.another_repo is not None and self.another_repo.is_in(d.name):
             self.context.handle_issue(SameNameWarning(
-                key,
-                definition.position,
-                self.another_repo.definitions[key].position
+                d.name,
+                d.position,
+                self.another_repo.defs[d.name].position
             ))

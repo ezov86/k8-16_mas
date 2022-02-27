@@ -1,9 +1,3 @@
-# Labels:
-# name - address - parent
-
-
-
-# Macroinstructions:
 %i i1 {
     a;
     a | b @l;

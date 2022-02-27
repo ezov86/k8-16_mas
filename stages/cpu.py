@@ -9,7 +9,7 @@ class InvalidCpuConfigError(AssemblyError):
         super().__init__('неверный формат конфигурацинного файла')
 
 
-class CpuConfigLoadingStage(Stage):
+class CpuConfigLoading(Stage):
     """
     Этап загрузки конфигурации процессора.
     """
@@ -21,7 +21,6 @@ class CpuConfigLoadingStage(Stage):
         try:
             dic = json.loads(text)
             context.cpu_config.name = dic['name']
-            context.cpu_config.mi_bits = dic['mi_bits']
             context.cpu_config.nmip_bits = dic['nmip_bits']
             context.cpu_config.inst_opc_bits = dic['inst_opc_bits']
             context.cpu_config.control_bits = dic['control_bits']

@@ -11,14 +11,14 @@ class Args:
         self.use_csv = False
         self.use_intel_hex = False
         self.ignore_errors = False
-        self.cpu_config_path = 'default_cpu_config.json'
+        self.cpu_config_path = ''
         self.stop_after_preprocessing = False
+        self.output_file = ''
 
 
 class CpuConfig:
     def __init__(self):
         self.name = ''
-        self.mi_bits = 0
         self.nmip_bits = 0
         self.inst_opc_bits = 0
         self.control_bits = []

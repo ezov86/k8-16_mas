@@ -1,21 +1,54 @@
-from assembler_ast import DefWithBody, MacrosDef
-from def_repo import DefsRepo
+from typing import List
+
+import assembler_ast as ast
+from position import Position
 
 
-class PreprocessedTree:
-    def __init__(self, macroinst_defs: DefsRepo, labels: DefsRepo):
+class BasePreprocNode:
+    def __init__(self, pos: Position = None):
+        self.position = pos
+
+
+class Root:
+    def __init__(self, macroinst_repo, labels_repo):
         super().__init__()
-        self.macroinst_defs = macroinst_defs
-        self.labels = labels
+        self.macroinst_repo = macroinst_repo
+        self.labels_repo = labels_repo
 
 
-class LabelDef(DefWithBody):
-    def __init__(self, full_name: str, local_name: str, relative_address: int, parent: DefWithBody, is_local=False):
-        super().__init__(full_name, [], [])
+class Def(BasePreprocNode):
+    def __init__(self, name: str):
+        super().__init__()
+        self.name = name
+
+
+class LabelDef(Def):
+    def __init__(self, name: str, local_name: str, parent: Def, is_local=False):
+        super().__init__(name)
         self.local_name = local_name
-        self.relative_address = relative_address
         self.parent = parent
         self.is_local = is_local
 
     def is_in_macros(self) -> bool:
         return isinstance(self.parent, MacrosDef)
+
+
+class Microinst(BasePreprocNode):
+    def __init__(self, bit_mask: List[ast.BitMask], label_defs: List[LabelDef], nm_label: ast.Label):
+        super().__init__()
+        self.bit_masks = bit_mask
+        self.label_defs = label_defs
+        self.nm_label = nm_label
+
+
+class MacroinstDef(Def):
+    def __init__(self, name: str, body: List[Microinst]):
+        super().__init__(name)
+        self.body = body
+
+
+class MacrosDef(Def):
+    def __init__(self, name: str, body: List[Microinst], is_inline: bool = False):
+        super().__init__(name)
+        self.body = body
+        self.is_inline = is_inline

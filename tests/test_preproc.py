@@ -1,8 +1,8 @@
 import helpers
-from stages.cpu import CpuConfigLoadingStage
+from stages.cpu import CpuConfigLoading
 from def_repo import ReservedNameUsageError, RedefinitionError, SpecialSymbolsInNameWarning, SameNameWarning
 
-from stages.parsing import CodeParsing
+from stages.code_parsing import CodeParsing
 from stages.preproc import *
 
 
@@ -11,8 +11,8 @@ def get_preproc_sample_path(path_in_samples_dir: str, is_valid: bool) -> str:
 
 
 pas = CodeParsing()
-ccs = CpuConfigLoadingStage()
-prs = PreprocessingStage()
+ccs = CpuConfigLoading()
+prs = Preprocessing()
 
 pas.set_next(ccs).set_next(prs)
 
@@ -33,8 +33,11 @@ def assert_issues(sample_name: str, expected_issues: list):
     real_issues = context.errors + context.warnings
 
     assert len(real_issues) == len(expected_issues)
-    for expected_error, real_error in zip(real_issues, expected_issues):
-        assert str(real_error) == str(expected_error)
+
+    real_issues_text = {str(issue) for issue in real_issues}
+    expected_issues_text = {str(issue) for issue in expected_issues}
+
+    assert real_issues_text == expected_issues_text
 
     helpers.reset_lexer()
 
@@ -42,9 +45,7 @@ def assert_issues(sample_name: str, expected_issues: list):
 def test_invalid_reserved_name_usage():
     assert_issues('reserved_name_usage', [
         ReservedNameUsageError('b', Position(1)),
-        ReservedNameUsageError('c(1)', Position(5)),
         ReservedNameUsageError('!nop', Position(9)),
-        ReservedNameUsageError('d(1, 2)', Position(7)),
         ReservedNameUsageError('c', Position(14)),
         ReservedNameUsageError('a', Position(12)),
         ReservedNameUsageError('d', Position(19)),

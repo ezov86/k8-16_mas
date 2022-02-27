@@ -1,6 +1,5 @@
-from typing import Optional
-from assembler_ast import *
-from pt import PreprocessedTree, LabelDef
+import assembler_ast as ast
+import pt
 
 from visitor import Visitor
 
@@ -8,60 +7,50 @@ from visitor import Visitor
 class PtToCode(Visitor):
     def __init__(self, tracking=False):
         self.tracking = tracking
+        self.text = ''
 
-    def visit_preprocessed_tree(self, n: PreprocessedTree) -> str:
-        text = '# Labels:\n'
-        text += '# name - address - parent\n'
+    def visit_root(self, n: pt.Root):
+        for macroinst in n.macroinst_repo.to_dict().values():
+            self.visit(macroinst)
+            self.add_line()
 
-        for label in n.labels.to_dict().values():
-            text += self.visit(label) + '\n'
+        return self.text
 
-        text += '\n\n\n'
-        text += '# Macroinstructions:\n'
+    def visit_label_def(self, n: pt.LabelDef):
+        self.add_line(f'{n.name}  --  {n.parent.name}')
 
-        for macroinst in n.macroinst_defs.to_dict().values():
-            text += self.visit(macroinst, n) + '\n\n'
+    def visit_macroinst_def(self, n: pt.MacroinstDef):
+        self.add_line(f'%i {n.name} {{')
 
-        return text
-
-    def visit_macroinst_def(self, n: MacroinstDef, pt: PreprocessedTree) -> str:
-        labels = []
-
-        for label in pt.labels.to_dict().values():
-            if label.parent.full_name() == n.full_name():
-                labels.append(label)
-
-        body = ''
-        address = 0
         for microinst in n.body:
-            for label in labels:
-                if label.relative_address == address:
-                    body += f'{label.name.replace(" ", "~")}:\n'
-            body += f'\t{self.visit(microinst)};'
+            self.visit(microinst)
 
-            if self.tracking:
-                body += f' # :{microinst.position}'
+        self.add_line('}')
 
-            body += '\n'
+    def visit_microinst(self, n: pt.Microinst):
+        if n.label_defs:
+            label_names = []
+            for label_def in n.label_defs:
+                label_names.append(label_def.name)
 
-            address += 1
+            self.add_text(', '.join(label_names))
+            self.add_line(':')
 
-        return f'%i {n.full_name()} {{\n{body}}}'
+        self.add_text('\t')
 
-    def visit_microinst(self, n: Microinst) -> str:
-        text = ' | '.join([self.visit(bit_mask) for bit_mask in n.bit_masks])
-        text += self.visit_label(n.next_microinst_label)
+        bit_masks_names = []
+        for bit_mask in n.bit_masks:
+            bit_masks_names.append(bit_mask.name)
 
-        return text
+        self.add_text(' | '.join(bit_masks_names))
 
-    def visit_label(self, n: Optional[Label]) -> str:
-        if n is None:
-            return ''
+        if n.nm_label is not None:
+            self.add_text(f' @{n.nm_label.name}')
 
-        return f' @{n.name}'
+        self.add_line(';')
 
-    def visit_bit_mask(self, n: BitMask) -> str:
-        return n.full_name()
+    def add_text(self, s: str):
+        self.text += s
 
-    def visit_label_def(self, n: LabelDef) -> str:
-        return f'# {{{n.name}}} - {{{n.relative_address}}} - {{{n.parent.full_name()}}}'
+    def add_line(self, s: str = ''):
+        self.add_text(s + '\n')
