@@ -1,11 +1,10 @@
 {
-  "name": "test",
+  "name": "example",
 
-  "mi_bits": 10,
-  "nmip_bits": 4,
-  "inst_opc_bits": 4,
+  "mi_adr_size": 4,
+  "inst_opc_size": 4,
 
-  "control_bits": [
+  "ctrl_bits_names": [
     "a",
     "b",
     "c",
@@ -14,20 +13,20 @@
     "f"
   ],
 
-  "conflicting_control_bits": [
+  "conflicts": [
     {
-      "bits": [
+      "one_of": [
         "a",
         "b"
       ],
-      "cond": []
+      "all": []
     },
     {
-      "bits": [
+      "one_of": [
         "a",
         "c"
       ],
-      "cond": ["f"]
+      "all": ["f"]
     }
   ]
 }

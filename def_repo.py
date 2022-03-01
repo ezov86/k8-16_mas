@@ -49,8 +49,9 @@ class DefsRepo:
         self.defs: Dict[str, pt.Def] = {}
         self.context = context
         self.builtin_names = [
-            *context.cpu_config.control_bits,
-            '!nop'
+            *context.cpu_config.ctrl_bits_names,
+            '!nop',
+            '!val'
         ]
 
     def add(self, d: pt.Def, ignore_spec_symbol=False):
@@ -87,7 +88,7 @@ class DefsRepo:
         d = self.find(name)
 
         if d is None:
-            DefNotFoundError(name, pos)
+            self.context.handle_issue(DefNotFoundError(name, pos))
 
         return d
 

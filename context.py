@@ -1,5 +1,6 @@
 from typing import Union
 
+from cpu import CpuConfig
 from issue import AssemblyError, AssemblyWarning
 
 
@@ -14,15 +15,6 @@ class Args:
         self.cpu_config_path = ''
         self.stop_after_preprocessing = False
         self.output_file = ''
-
-
-class CpuConfig:
-    def __init__(self):
-        self.name = ''
-        self.nmip_bits = 0
-        self.inst_opc_bits = 0
-        self.control_bits = []
-        self.conflicting_control_bits = []
 
 
 class Context:

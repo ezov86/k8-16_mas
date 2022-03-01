@@ -20,11 +20,7 @@ class CpuConfigLoading(Stage):
 
         try:
             dic = json.loads(text)
-            context.cpu_config.name = dic['name']
-            context.cpu_config.nmip_bits = dic['nmip_bits']
-            context.cpu_config.inst_opc_bits = dic['inst_opc_bits']
-            context.cpu_config.control_bits = dic['control_bits']
-            context.cpu_config.conflicting_control_bits = dic['conflicting_control_bits']
+            context.cpu_config.from_dict(dic)
 
         except json.decoder.JSONDecodeError or KeyError:
             context.handle_issue(InvalidCpuConfigError())
