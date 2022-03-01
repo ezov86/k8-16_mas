@@ -3,6 +3,7 @@
 
   "mi_adr_size": 4,
   "inst_opc_size": 4,
+  "nop_value": 0,
 
   "ctrl_bits_names": [
     "a",

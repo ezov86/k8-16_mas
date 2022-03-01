@@ -5,8 +5,8 @@ import json
 
 
 class InvalidCpuConfigError(AssemblyError):
-    def __init__(self):
-        super().__init__('неверный формат конфигурацинного файла')
+    def __init__(self, message: str):
+        super().__init__(f'неверный формат конфигурационного файла: {message}')
 
 
 class CpuConfigLoading(Stage):
@@ -22,7 +22,11 @@ class CpuConfigLoading(Stage):
             dic = json.loads(text)
             context.cpu_config.from_dict(dic)
 
-        except json.decoder.JSONDecodeError or KeyError:
-            context.handle_issue(InvalidCpuConfigError())
+        except json.decoder.JSONDecodeError:
+            context.handle_issue(InvalidCpuConfigError('ошибка при разборе JSON'))
+        except TypeError:
+            context.handle_issue(InvalidCpuConfigError('поле имеет неверный тип'))
+        except KeyError:
+            context.handle_issue(InvalidCpuConfigError('поле с именем не найдено'))
 
         return super().handle(context)

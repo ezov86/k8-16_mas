@@ -38,6 +38,7 @@ class CpuConfig:
         self.name = ''
         self.mi_adr_size = 0
         self.inst_opc_size = 0
+        self.nop_value = 0
         self.ctrl_bits_names = []
         self.conflicts = []
 
@@ -58,8 +59,11 @@ class CpuConfig:
 
     def from_dict(self, d: dict):
         self.name = d['name']
-        self.mi_adr_size = d['mi_adr_size']
-        self.inst_opc_size = d['inst_opc_size']
+        self.mi_adr_size = int(d['mi_adr_size'])
+        self.inst_opc_size = int(d['inst_opc_size'])
+        self.nop_value = int(d['nop_value'])
+        if not isinstance(d['ctrl_bits_names'], list) or d['conflicts']:
+            raise TypeError()
         self.ctrl_bits_names = d['ctrl_bits_names']
 
         for conf_dict in d['conflicts']:
