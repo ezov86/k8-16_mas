@@ -37,8 +37,8 @@ class Context:
             raise ValueError()
 
         # Поиск совпадающих по содержанию проблем.
-        for issue in lst:
-            if str(issue) == str(issue):
+        for issue2 in lst:
+            if str(issue) == str(issue2):
                 # Добавление дубликата не требуется.
                 return
 
