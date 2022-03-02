@@ -15,6 +15,7 @@ class Args:
         self.cpu_config_path = ''
         self.stop_after_preprocessing = False
         self.output_file = ''
+        self.generator = ''
 
 
 class Context:
@@ -29,11 +30,19 @@ class Context:
 
     def handle_issue(self, issue: Union[AssemblyError, AssemblyWarning]):
         if isinstance(issue, AssemblyError):
-            self.errors.append(issue)
+            lst = self.errors
         elif isinstance(issue, AssemblyWarning):
-            self.warnings.append(issue)
+            lst = self.warnings
         else:
             raise ValueError()
+
+        # Поиск совпадающих по содержанию проблем.
+        for issue in lst:
+            if str(issue) == str(issue):
+                # Добавление дубликата не требуется.
+                return
+
+        lst.append(issue)
 
     def has_errors(self) -> bool:
         return len(self.errors) >= 1

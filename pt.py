@@ -22,7 +22,13 @@ class Def(BasePreprocNode):
         self.name = name
 
 
-class LabelDef(Def):
+class DefWithAddress(Def):
+    def __init__(self, name: str):
+        super().__init__(name)
+        self.address = 0
+
+
+class LabelDef(DefWithAddress):
     def __init__(self, name: str, local_name: str, parent: Def, is_local=False):
         super().__init__(name)
         self.local_name = local_name
@@ -41,7 +47,7 @@ class Microinst(BasePreprocNode):
         self.nm_label = nm_label
 
 
-class MacroinstDef(Def):
+class MacroinstDef(DefWithAddress):
     def __init__(self, name: str, body: List[Microinst]):
         super().__init__(name)
         self.body = body

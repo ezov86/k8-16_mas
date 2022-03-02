@@ -39,16 +39,18 @@ class CpuConfig:
         self.mi_adr_size = 0
         self.inst_opc_size = 0
         self.nop_value = 0
+        self.big_endian = False
         self.ctrl_bits_names = []
         self.conflicts = []
 
+    def get_ctrl_bits_size(self) -> int:
+        return len(self.ctrl_bits_names)
+
     def get_microinst_size(self) -> int:
-        return len(self.ctrl_bits_names) + self.mi_adr_size
+        return self.get_ctrl_bits_size() + self.mi_adr_size
 
     def get_cont_bit_index(self, name: str) -> int:
-        i = self.ctrl_bits_names.index(name)
-
-        return i
+        return self.ctrl_bits_names.index(name)
 
     def find_conflicting_bits(self, mi_bits: MicroinstBits) -> List[str]:
         found_conflicts = []
@@ -58,12 +60,16 @@ class CpuConfig:
         return found_conflicts
 
     def from_dict(self, d: dict):
+        if not (isinstance(d['ctrl_bits_names'], list)
+                or isinstance(d['conflicts'], list)
+                or isinstance(d['big_endian'], bool)):
+            raise TypeError()
+
         self.name = d['name']
         self.mi_adr_size = int(d['mi_adr_size'])
         self.inst_opc_size = int(d['inst_opc_size'])
         self.nop_value = int(d['nop_value'])
-        if not isinstance(d['ctrl_bits_names'], list) or d['conflicts']:
-            raise TypeError()
+        self.big_endian = d['big_endian']
         self.ctrl_bits_names = d['ctrl_bits_names']
 
         for conf_dict in d['conflicts']:

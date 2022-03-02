@@ -22,6 +22,10 @@ class ArgsParsing(Stage):
         arg_parser.add_argument('-r', '--stop-after-preprocessing', help='Остановиться после работы препроцессора и '
                                                                          'вывести обработанное дерево в формате JSON.',
                                 action='store_true', default=False)
+        arg_parser.add_argument('-o', '--output-file-path', help='Указать путь к выходному файлу.', action='store',
+                                default='out')
+        arg_parser.add_argument('-g', '--generator', help='Название генератора выходных данных (bin|csv).',
+                                action='store', default='bin')
 
         args = arg_parser.parse_args()
 
@@ -32,5 +36,7 @@ class ArgsParsing(Stage):
         context.args.use_intel_hex = args.use_intel_hex
         context.args.cpu_config_path = args.cpu_config_path
         context.args.stop_after_preprocessing = args.stop_after_preprocessing
+        context.args.output_file_path = args.output_file_path
+        context.args.generator = args.generator
 
         return super().handle(context)

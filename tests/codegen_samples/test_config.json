@@ -1,0 +1,34 @@
+{
+  "name": "example",
+
+  "mi_adr_size": 8,
+  "inst_opc_size": 4,
+  "nop_value": 0,
+  "big_endian": false,
+
+  "ctrl_bits_names": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f"
+  ],
+
+  "conflicts": [
+    {
+      "one_of": [
+        "a",
+        "b"
+      ],
+      "all": []
+    },
+    {
+      "one_of": [
+        "a",
+        "c"
+      ],
+      "all": ["f"]
+    }
+  ]
+}
