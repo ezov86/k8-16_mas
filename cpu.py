@@ -73,4 +73,6 @@ class CpuConfig:
         self.ctrl_bits_names = d['ctrl_bits_names']
 
         for conf_dict in d['conflicts']:
-            self.conflicts.append(ControlBitsConflict().from_dict(conf_dict, self))
+            conf = ControlBitsConflict()
+            conf.from_dict(conf_dict, self)
+            self.conflicts.append(conf)
