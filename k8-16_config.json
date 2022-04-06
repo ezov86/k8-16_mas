@@ -1,0 +1,66 @@
+{
+  "name": "k8-16",
+
+  "mi_adr_size": 56,
+  "inst_opc_size": 8,
+  "nop_value": 0,
+  "big_endian": false,
+
+  "ctrl_bits_names": [
+    "SRF_sel_iph",
+    "SRF_sel_ipl",
+    "SRF_sel_sph",
+    "SRF_sel_spl",
+    "SRF_sel_md",
+    "SRF_r",
+    "SRF_w",
+
+    "RAM_r",
+    "RAM_w",
+
+    "IP_INC_sel_iph",
+    "IP_INC_sel_ipl",
+
+    "FLAGS_rsel",
+    "FLAGS_ws",
+    "FLAGS_if_in",
+    "FLAGS_wcf",
+    "FLAGS_wzf",
+    "FLAGS_wnf",
+    "FLAGS_wif",
+
+    "ALU_bsel",
+    "ALU_add",
+    "ALU_and",
+    "ALU_inv",
+    "ALU_asel",
+    "ALU_pbtoah",
+    "ALU_pb",
+    "ALU_pa",
+    "ALU_asr",
+    "ALU_lsl",
+
+    "rTMP_wg",
+    "rTMP_rg",
+    "rTMP_ws",
+    "rTMP_rs",
+    "rTMP_wa",
+
+    "GRF_w",
+    "GRF_r",
+    "GRF_sel_y",
+    "GRF_sel_x",
+    "GRF_sel_b",
+    "GRF_sel_a",
+
+    "CU_cnd",
+    "CU_wmd",
+
+    "RESERVED0",
+    "RESERVED1",
+    "RESERVED2"
+  ],
+
+  "conflicts": [
+  ]
+}
