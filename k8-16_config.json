@@ -62,5 +62,63 @@
   ],
 
   "conflicts": [
+    {
+      "one_of": [],
+      "all": [
+        "ALU_lsl",
+        "ALU_asr"
+      ]
+    },
+    {
+      "one_of": [
+        "rTMP_wa",
+        "rTMP_wg",
+        "rTMP_ws"
+      ],
+      "all": []
+    },
+    {
+      "one_of": [],
+      "all": [
+        "IP_INC_sel_iph",
+        "IP_INC_sel_ipl"]
+    },
+    {
+      "one_of": [],
+      "all": [
+        "GRF_r",
+        "GRF_w"
+      ]
+    },
+    {
+      "one_of": [
+        "GRF_sel_y",
+        "GRF_sel_x",
+        "GRF_sel_b",
+        "GRF_sel_a"
+      ],
+      "all": [
+        "GRF_r"
+      ]
+    },
+    {
+      "one_of": [],
+      "all" : [
+        "SRF_r",
+        "SRF_w"
+      ]
+    },
+    {
+      "one_of": [
+        "SRF_sel_iph",
+        "SRF_sel_ipl",
+        "SRF_sel_sph",
+        "SRF_sel_spl",
+        "SRF_sel_md"
+      ],
+      "all" : [
+        "SRF_r"
+      ]
+    }
   ]
 }
