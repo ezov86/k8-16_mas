@@ -202,8 +202,9 @@ class SecondPass(Visitor):
             self.context.handle_issue(DirectiveInvalidUsageError(n.name, n.position))
             return
 
-        i = self.cpu_config.ctrl_bits_names.index(n.name)
-        if i < 0:
+        try:
+            i = self.cpu_config.ctrl_bits_names.index(n.name)
+        except ValueError:
             self.context.handle_issue(BitMaskNotFoundError(n.name, n.position))
             return
 

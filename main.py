@@ -18,4 +18,7 @@ if __name__ == '__main__':
         .set_next(preproc)\
         .set_next(codegen)
 
-    args_parsing.handle(Context())
+    try:
+        args_parsing.handle(Context())
+    except IOError as e:
+        print(f'Ошибка открытия файла: {str(e)}')
